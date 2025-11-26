@@ -1,0 +1,317 @@
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+    <meta charset="UTF-8" /> 
+    <title>Planificador de Actividades de Estudio</title> <!-- Establece el título de la página que se muestra en la pestaña del navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Configura la vista para dispositivos móviles, ajustando el ancho y escala inicial -->
+    <link rel="stylesheet" href="css/styles.css" /> <!-- Enlaza el archivo de estilos CSS para aplicar el diseño visual -->
+</head> 
+<body> 
+    <header class="header">
+    <div class="header__titles"> 
+        <h1>Planificador de Actividades de Estudio</h1> <!-- Muestra el título principal de la aplicación -->
+        <p class="header__subtitle"> <!-- Agrega un subtítulo descriptivo -->
+        Proyecto integrador – Practicá JavaScript y manipulación del DOM
+        </p>
+    </div> 
+
+    <div class="header__actions"> <!-- Crea un contenedor para acciones en la cabecera -->
+        <button id="btnToggleTheme" class="btn btn--ghost"> <!-- Botón para cambiar entre temas claro y oscuro -->
+        🌓 Tema claro/oscuro
+        </button>
+    </div> 
+    </header> 
+    <main class="layout"> 
+    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+    <section class="panel panel--left"> <!-- Comienza la sección izquierda para el formulario -->
+        <h2 class="panel__title">Nueva actividad</h2> <!-- Título de la sección para nueva actividad -->
+        <p class="panel__description"> <!-- Descripción instructiva para el usuario -->
+        Completá el formulario y después usá JavaScript para agregar la
+        actividad a la lista, validarla, calcular estadísticas, etc.
+        </p>
+
+        <form id="activityForm" class="form"> <!-- Inicia el formulario para agregar nueva actividad -->
+        <div class="form__group"> <!-- Grupo de formulario para el título -->
+            <label for="title">Título de la actividad</label> <!-- Etiqueta para el campo de título -->
+            <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Ej: Repasar funciones de JavaScript"
+            required
+            /> <!-- Campo de texto para ingresar el título, requerido -->
+        </div> 
+
+        <div class="form__group"> <!-- Grupo de formulario para la materia -->
+            <label for="subject">Materia / curso</label> <!-- Etiqueta para el campo de materia -->
+            <input
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder="Ej: JavaScript – CapacitarTec"
+            /> <!-- Campo de texto para ingresar la materia -->
+        </div> 
+
+        <div class="form__group"> <!-- Grupo de formulario para el tipo de actividad -->
+            <label for="type">Tipo de actividad</label> <!-- Etiqueta para el selector de tipo -->
+            <select id="type" name="type"> <!-- Selector desplegable para elegir el tipo -->
+            <option value="lectura">Lectura teórica</option> <!-- Opción para lectura teórica -->
+            <option value="practica">Práctica / ejercicios</option> <!-- Opción para práctica -->
+            <option value="proyecto">Proyecto / integrador</option> <!-- Opción para proyecto -->
+            <option value="evaluacion">Evaluación / parcial</option> <!-- Opción para evaluación -->
+            </select> <!-- Cierra el selector -->
+        </div> 
+
+        <div class="form__group form__group--inline"> <!-- Grupo para dificultad y tiempo estimado -->
+            <div> <!-- Subdivisión para dificultad -->
+            <label for="difficulty">Dificultad</label> <!-- Etiqueta para selector de dificultad -->
+            <select id="difficulty" name="difficulty"> <!-- Selector para elegir dificultad -->
+                <option value="facil">Fácil</option> <!-- Opción fácil -->
+                <option value="media">Media</option> <!-- Opción media -->
+                <option value="dificil">Difícil</option> <!-- Opción difícil -->
+            </select> <!-- Cierra el selector -->
+            </div> 
+
+            <div> <!-- Subdivisión para tiempo estimado -->
+            <label for="estimatedTime">Tiempo estimado (hs)</label> <!-- Etiqueta para campo de tiempo -->
+            <input
+                type="number"
+                id="estimatedTime"
+                name="estimatedTime"
+                min="0"
+                step="0.5"
+                placeholder="1.5"
+            /> <!-- Campo numérico para tiempo, con mínimo 0 y paso 0.5 -->
+            </div> <!-- Cierra la subdivisión de tiempo -->
+        </div> 
+
+        <div class="form__group form__group--inline"> <!-- Grupo para prioridad y fecha límite -->
+            <div> <!-- Subdivisión para prioridad -->
+            <span class="form__label">Prioridad</span> <!-- Etiqueta para opciones de prioridad -->
+            <div class="form__options"> <!-- Contenedor para opciones de radio -->
+                <label class="chip"> <!-- Opción para prioridad baja, seleccionada por defecto -->
+                <input type="radio" name="priority" value="baja" checked />
+                <span>Baja</span>
+                </label>
+                <label class="chip"> <!-- Opción para prioridad media -->
+                <input type="radio" name="priority" value="media" />
+                <span>Media</span>
+                </label>
+                <label class="chip"> <!-- Opción para prioridad alta -->
+                <input type="radio" name="priority" value="alta" />
+                <span>Alta</span>
+                </label>
+            </div> <!-- Cierra el contenedor de opciones -->
+            </div> 
+
+            <div> <!-- Subdivisión para fecha límite -->
+            <label for="deadline">Fecha límite</label> <!-- Etiqueta para campo de fecha -->
+            <input type="date" id="deadline" name="deadline" /> <!-- Campo para seleccionar fecha -->
+            </div> <!-- Cierra la subdivisión de fecha -->
+        </div>
+
+        <div class="form__group"> <!-- Grupo para notas -->
+            <label for="notes">Notas / detalle</label> <!-- Etiqueta para área de texto -->
+            <textarea
+            id="notes"
+            name="notes"
+            rows="3"
+            placeholder="Ej: Priorizar ejercicios de arrays, bucles y DOM."
+            ></textarea> <!-- Área de texto para notas, con 3 filas -->
+        </div> <!-- Cierra el grupo de notas -->
+
+        <div class="form__group form__group--inline form__group--between"> <!-- Grupo para checkbox importante y botón submit -->
+            <label class="form__checkbox"> <!-- Checkbox para marcar como importante -->
+            <input type="checkbox" id="isImportant" name="isImportant" />
+            <span>Marcar como actividad importante</span>
+            </label>
+
+            <button type="submit" class="btn btn--primary"> <!-- Botón para enviar el formulario -->
+            + Agregar actividad
+            </button>
+        </div> 
+        </form> <!-- Cierra el formulario -->
+    </section> <!-- Cierra la sección izquierda -->
+
+    <!-- COLUMNA DERECHA -->
+    <section class="panel panel--right"> <!-- Comienza la sección derecha para resumen y lista -->
+        <div class="panel__header"> <!-- Cabecera del panel derecho -->
+        <h2 class="panel__title">Resumen del estudio</h2> <!-- Título del resumen -->
+        </div>
+
+        <!-- RESUMEN / ESTADÍSTICAS -->
+        <section class="stats"> <!-- Sección para estadísticas -->
+        <article class="stat-card"> <!-- Tarjeta para total de actividades -->
+            <span class="stat-card__label">Total de actividades</span> <!-- Etiqueta de la estadística -->
+            <span id="statTotal" class="stat-card__value">0</span> <!-- Valor de la estadística, inicia en 0 -->
+        </article> 
+
+        <article class="stat-card"> <!-- Tarjeta para completadas -->
+            <span class="stat-card__label">Completadas</span> <!-- Etiqueta -->
+            <span id="statCompleted" class="stat-card__value">0</span> <!-- Valor -->
+        </article> <!-- Cierra -->
+
+        <article class="stat-card"> <!-- Tarjeta para pendientes -->
+            <span class="stat-card__label">Pendientes</span> <!-- Etiqueta -->
+            <span id="statPending" class="stat-card__value">0</span> <!-- Valor -->
+        </article> <!-- Cierra -->
+
+        <article class="stat-card"> <!-- Tarjeta para horas estimadas -->
+            <span class="stat-card__label">Horas estimadas</span> <!-- Etiqueta -->
+            <span id="statHours" class="stat-card__value">0</span> <!-- Valor -->
+        </article> <!-- Cierra -->
+        </section> <!-- Cierra la sección de estadísticas -->
+
+        <!-- FILTROS Y BÚSQUEDA -->
+        <section class="toolbar"> <!-- Sección para toolbar de filtros y búsqueda -->
+        <div class="toolbar__group"> <!-- Grupo para búsqueda -->
+            <label for="search" class="toolbar__label">Buscar</label> <!-- Etiqueta para campo de búsqueda -->
+            <input
+            type="search"
+            id="search"
+            placeholder="Filtrar por título o materia..."
+            /> <!-- Campo de búsqueda -->
+        </div> <!-- Cierra el grupo -->
+
+        <div class="toolbar__group"> <!-- Grupo para filtro por estado -->
+            <span class="toolbar__label">Filtrar por estado</span> <!-- Etiqueta -->
+            <div class="toolbar__buttons"> <!-- Contenedor de botones -->
+            <button
+                class="btn btn--ghost btn-filter is-active"
+                data-filter="todas"
+            > <!-- Botón para todas, activo por defecto -->
+                Todas
+            </button>
+            <button
+                class="btn btn--ghost btn-filter"
+                data-filter="pendientes"
+            > <!-- Botón para pendientes -->
+                Pendientes
+            </button>
+            <button
+                class="btn btn--ghost btn-filter"
+                data-filter="completadas"
+            > <!-- Botón para completadas -->
+                Completadas
+            </button>
+            </div> <!-- Cierra el contenedor de botones -->
+        </div> <!-- Cierra el grupo -->
+
+        <div class="toolbar__group"> <!-- Grupo para ordenamiento -->
+            <label for="sort" class="toolbar__label">Ordenar por</label> <!-- Etiqueta para selector de orden -->
+            <select id="sort"> <!-- Selector para elegir orden -->
+            <option value="fecha">Fecha límite</option> <!-- Opción por fecha -->
+            <option value="prioridad">Prioridad</option> <!-- Opción por prioridad -->
+            <option value="titulo">Título</option> <!-- Opción por título -->
+            </select> <!-- Cierra el selector -->
+        </div> <!-- Cierra el grupo -->
+        </section> <!-- Cierra la sección de toolbar -->
+
+        <!-- LISTA DE ACTIVIDADES -->
+        <section class="table-panel"> <!-- Sección para la tabla de actividades -->
+        <div class="table-panel__header"> <!-- Cabecera de la tabla -->
+            <h3>Lista de actividades</h3> <!-- Título de la lista -->
+            <small> <!-- Descripción instructiva -->
+            Usá JavaScript para agregar filas, marcarlas como completadas,
+            borrarlas, etc.
+            </small>
+        </div> <!-- Cierra la cabecera -->
+
+        <p id="emptyState" class="empty-state"> <!-- Mensaje cuando no hay actividades -->
+            No hay actividades cargadas. Agregá la primera usando el formulario.
+        </p>
+
+        <div class="table-wrapper"> <!-- Contenedor para la tabla -->
+            <table class="table"> <!-- Inicia la tabla -->
+            <thead> <!-- Cabecera de la tabla -->
+                <tr> <!-- Fila de encabezados -->
+                <th>✔</th> <!-- Columna para checkbox -->
+                <th>Título</th> <!-- Columna para título -->
+                <th>Materia</th> <!-- Columna para materia -->
+                <th>Tipo</th> <!-- Columna para tipo -->
+                <th>Prioridad</th> <!-- Columna para prioridad -->
+                <th>Fecha límite</th> <!-- Columna para fecha límite -->
+                <th>Tiempo (hs)</th> <!-- Columna para tiempo -->
+                <th>Acciones</th> <!-- Columna para acciones -->
+                </tr> <!-- Cierra la fila -->
+            </thead> <!-- Cierra la cabecera -->
+            <tbody id="activityTableBody"> <!-- Cuerpo de la tabla donde se agregan filas dinámicamente -->
+            </tbody> <!-- Cierra el cuerpo -->
+            </table> <!-- Cierra la tabla -->
+        </div> <!-- Cierra el contenedor de tabla -->
+        </section> <!-- Cierra la sección de tabla -->
+    </section> <!-- Cierra la sección derecha -->
+    </main> <!-- Cierra la sección principal -->
+
+    <!-- MODAL DE EDICIÓN -->
+    <div id="editModal" class="modal" aria-hidden="true"> <!-- Modal para edición, inicialmente oculto -->
+    <div class="modal__backdrop"></div> <!-- Fondo del modal -->
+    <div class="modal__content" role="dialog" aria-modal="true"> <!-- Contenido del modal -->
+        <header class="modal__header"> <!-- Cabecera del modal -->
+        <h2>Editar actividad</h2> <!-- Título del modal -->
+        <button id="btnCloseModal" class="modal__close">&times;</button> <!-- Botón para cerrar -->
+        </header> <!-- Cierra la cabecera -->
+
+        <form id="editForm" class="form modal__body"> <!-- Formulario de edición dentro del modal -->
+        <div class="form__group"> <!-- Grupo para título de edición -->
+            <label for="editTitle">Título</label> <!-- Etiqueta -->
+            <input type="text" id="editTitle" /> <!-- Campo de texto -->
+        </div> <!-- Cierra grupo -->
+
+        <div class="form__group"> <!-- Grupo para materia de edición -->
+            <label for="editSubject">Materia</label> <!-- Etiqueta -->
+            <input type="text" id="editSubject" /> <!-- Campo de texto -->
+        </div> <!-- Cierra grupo -->
+
+        <div class="form__group form__group--inline"> <!-- Grupo para tipo y fecha -->
+            <div> <!-- Subdivisión para tipo -->
+            <label for="editType">Tipo</label> <!-- Etiqueta -->
+            <select id="editType"> <!-- Selector -->
+                <option value="lectura">Lectura teórica</option> <!-- Opción lectura -->
+                <option value="practica">Práctica / ejercicios</option> <!-- Opción práctica -->
+                <option value="proyecto">Proyecto</option> <!-- Opción proyecto -->
+                <option value="evaluacion">Evaluación</option> <!-- Opción evaluación -->
+            </select> <!-- Cierra selector -->
+            </div> <!-- Cierra subdivisión -->
+
+            <div> <!-- Subdivisión para fecha -->
+            <label for="editDeadline">Fecha límite</label> <!-- Etiqueta -->
+            <input type="date" id="editDeadline" /> <!-- Campo de fecha -->
+            </div> <!-- Cierra subdivisión -->
+        </div> <!-- Cierra grupo inline -->
+
+        <footer class="modal__footer"> <!-- Pie del modal con botones -->
+            <button type="button" class="btn btn--ghost" id="btnCancelEdit"> <!-- Botón para cancelar -->
+            Cancelar
+            </button>
+            <button type="submit" class="btn btn--primary"> <!-- Botón para guardar -->
+            Guardar cambios
+            </button>
+        </footer> <!-- Cierra el pie -->
+        </form> <!-- Cierra el formulario -->
+    </div> <!-- Cierra el contenido del modal -->
+    </div> <!-- Cierra el modal -->
+
+    <template id="rowTemplate"> <!-- Plantilla para filas de tabla, usada en JS -->
+    <tr data-id="" data-status="pendiente"> <!-- Fila de plantilla con atributos -->
+        <td> <!-- Celda para checkbox -->
+        <input type="checkbox" class="row-complete" />
+        </td> <!-- Cierra celda -->
+        <td class="row-title"></td> <!-- Celda para título -->
+        <td class="row-subject"></td> <!-- Celda para materia -->
+        <td class="row-type"></td> <!-- Celda para tipo -->
+        <td> <!-- Celda para prioridad con badge -->
+        <span class="badge badge--priority"></span>
+        </td> <!-- Cierra celda -->
+        <td class="row-deadline"></td> <!-- Celda para fecha -->
+        <td class="row-time"></td> <!-- Celda para tiempo -->
+        <td class="row-actions"> <!-- Celda para acciones -->
+        <button class="btn-link btn-edit">Editar</button> <!-- Botón editar -->
+        <button class="btn-link btn-delete">Eliminar</button> <!-- Botón eliminar -->
+        </td> <!-- Cierra celda -->
+    </tr> <!-- Cierra la fila de plantilla -->
+    </template> <!-- Cierra la plantilla -->
+
+    <script src="js/main.js"></script> <!-- Enlaza el script JS para la lógica -->
+</body> <!-- Cierra el cuerpo -->
+</html> <!-- Cierra el HTML -->

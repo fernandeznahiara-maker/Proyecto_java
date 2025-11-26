@@ -1,0 +1,634 @@
+:root { /* Define variables base para colores y estilos en modo oscuro */
+--bg: #0f172a; /* Color de fondo principal */
+--bg-soft: #111827; /* Fondo suave */
+--bg-softer: #020617; /* Fondo más suave */
+--fg: #f9fafb; /* Color de texto principal */
+--fg-muted: #9ca3af; /* Texto atenuado */
+--accent: #fda4af; /* Color de acento rosado */
+--accent-soft: rgba(253, 164, 175, 0.12); /* Acento suave */
+--danger: #fb7185; /* Color de peligro */
+--border: #1f2937; /* Color de bordes */
+--radius-lg: 16px; /* Radio grande para esquinas */
+--radius-md: 10px; /* Radio mediano */
+--shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.6); /* Sombra suave */
+--font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif; /* Fuente principal */
+}
+
+body.theme-light { /* Estilos para modo claro cuando se agrega la clase al body */
+--bg: #f3f4f6; /* Fondo claro */
+--bg-soft: #ffffff; /* Fondo blanco */
+--bg-softer: #e5e7eb; /* Fondo gris claro */
+--fg: #0f172a; /* Texto oscuro */
+--fg-muted: #6b7280; /* Texto atenuado claro */
+--accent-soft: rgba(253, 164, 175, 0.18); /* Acento suave claro */
+--border: #d1d5db; /* Bordes claros */
+--shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.18); /* Sombra clara */
+}
+
+*,
+*::before,
+*::after { /* Resetea el box-sizing para todos los elementos */
+box-sizing: border-box; /* Calcula tamaños incluyendo bordes */
+}
+
+body { /* Estilos base para el body */
+margin: 0; /* Sin márgenes */
+min-height: 100vh; /* Altura mínima completa */
+font-family: var(--font-sans); /* Usa la fuente definida */
+background: radial-gradient(circle at top left, #1e293b, #020617 55%); /* Fondo degradado */
+color: var(--fg); /* Color de texto */
+}
+
+/* HEADER */
+
+.header { /* Estilos para la cabecera */
+max-width: 1200px; /* Ancho máximo */
+margin: 24px auto 0; /* Márgenes superiores */
+padding: 18px 20px; /* Espacio interior */
+border-radius: 999px; /* Esquinas redondeadas */
+background: linear-gradient(
+    120deg,
+    rgba(253, 164, 175, 0.12),
+    transparent,
+    rgba(253, 164, 175, 0.1)
+    ),
+    rgba(15, 23, 42, 0.92); /* Fondo con degradado */
+border: 1px solid rgba(148, 163, 184, 0.4); /* Borde */
+display: flex; /* Disposición flexible */
+align-items: center; /* Alinea verticalmente */
+justify-content: space-between; /* Espacio entre elementos */
+gap: 16px; /* Espacio entre */
+box-shadow: var(--shadow-soft); /* Sombra */
+position: sticky; /* Fija en la parte superior */
+top: 16px; /* Posición desde arriba */
+z-index: 10; /* Capa superior */
+backdrop-filter: blur(18px); /* Desenfoque de fondo */
+}
+
+.header__titles h1 { /* Estilos para el título en cabecera */
+margin: 0; /* Sin márgenes */
+font-size: 1.4rem; /* Tamaño de fuente */
+letter-spacing: 0.04em; /* Espacio entre letras */
+}
+
+.header__subtitle { /* Subtítulo en cabecera */
+margin: 3px 0 0; /* Márgenes */
+font-size: 0.85rem; /* Tamaño */
+color: var(--fg-muted); /* Color atenuado */
+}
+
+.header__actions { /* Acciones en cabecera */
+display: flex; /* Flexible */
+align-items: center; /* Alinea */
+gap: 8px; /* Espacio */
+}
+
+/* LAYOUT PRINCIPAL */
+
+.layout { /* Layout principal */
+max-width: 1200px; /* Ancho máximo */
+margin: 24px auto 40px; /* Márgenes */
+padding: 0 20px 16px; /* Espacio interior */
+display: grid; /* Disposición en grilla */
+grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); /* Columnas */
+gap: 20px; /* Espacio entre */
+}
+
+.panel { /* Paneles generales */
+background: rgba(15, 23, 42, 0.92); /* Fondo semitransparente */
+border-radius: 28px; /* Esquinas */
+border: 1px solid rgba(148, 163, 184, 0.4); /* Borde */
+padding: 20px 22px 22px; /* Espacio */
+box-shadow: var(--shadow-soft); /* Sombra */
+position: relative; /* Posición relativa */
+overflow: hidden; /* Oculta desbordes */
+}
+
+.panel::before { /* Efecto de fondo en panel */
+content: ""; /* Contenido vacío */
+position: absolute; /* Posición absoluta */
+inset: -40%; /* Posición interior */
+opacity: 0.06; /* Opacidad baja */
+background: radial-gradient(circle at top left, #fda4af, transparent 55%),
+    radial-gradient(circle at bottom right, #fda4af, transparent 55%); /* Degradados */
+pointer-events: none; /* No interactuable */
+}
+
+.panel__title { /* Título de panel */
+margin: 0 0 6px; /* Márgenes */
+font-size: 1.1rem; /* Tamaño */
+letter-spacing: 0.03em; /* Espacio letras */
+text-transform: uppercase; /* Mayúsculas */
+}
+
+.panel__description { /* Descripción de panel */
+margin: 0 0 16px; /* Márgenes */
+font-size: 0.9rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.panel__header { /* Cabecera de panel */
+display: flex; /* Flexible */
+align-items: baseline; /* Alinea base */
+justify-content: space-between; /* Espacio entre */
+gap: 12px; /* Espacio */
+}
+
+/* FORMULARIO */
+
+.form { /* Formulario general */
+position: relative; /* Relativa */
+z-index: 1; /* Capa superior */
+display: flex; /* Flexible */
+flex-direction: column; /* Columna */
+gap: 12px; /* Espacio */
+}
+
+.form__group { /* Grupo de formulario */
+display: flex; /* Flexible */
+flex-direction: column; /* Columna */
+gap: 6px; /* Espacio */
+}
+
+.form__group--inline { /* Grupo inline */
+flex-direction: row; /* Fila */
+gap: 10px; /* Espacio */
+}
+
+.form__group--inline > * { /* Elementos en inline ocupan igual espacio */
+flex: 1; /* Flexible igual */
+}
+
+.form__group--between { /* Grupo entre elementos */
+align-items: center; /* Centra vertical */
+justify-content: space-between; /* Espacio entre */
+}
+
+.form__label { /* Etiqueta de formulario */
+font-size: 0.85rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.form__options { /* Opciones de formulario */
+display: flex; /* Flexible */
+flex-wrap: wrap; /* Envuelve */
+gap: 6px; /* Espacio */
+}
+
+label { /* Etiquetas generales */
+font-size: 0.86rem; /* Tamaño */
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+select,
+textarea { /* Estilos para inputs de texto, número, fecha, búsqueda, select y textarea */
+width: 100%; /* Ancho completo */
+padding: 8px 10px; /* Espacio interior */
+border-radius: 999px; /* Esquinas redondas */
+border: 1px solid rgba(148, 163, 184, 0.5); /* Borde */
+background: rgba(15, 23, 42, 0.9); /* Fondo */
+color: var(--fg); /* Color texto */
+font: inherit; /* Fuente heredada */
+outline: none; /* Sin outline */
+transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    background-color 0.18s ease; /* Transiciones */
+}
+
+textarea { /* Textarea específica */
+border-radius: 14px; /* Esquinas */
+resize: vertical; /* Redimensionable vertical */
+}
+
+input::placeholder,
+textarea::placeholder { /* Placeholders */
+color: rgba(148, 163, 184, 0.8); /* Color */
+font-size: 0.84rem; /* Tamaño */
+}
+
+input:focus,
+select:focus,
+textarea:focus { /* Foco en inputs */
+border-color: var(--accent); /* Borde acento */
+box-shadow: 0 0 0 1px rgba(253, 164, 175, 0.4); /* Sombra */
+}
+
+.form__checkbox { /* Checkbox en formulario */
+display: flex; /* Flexible */
+align-items: center; /* Centra */
+gap: 8px; /* Espacio */
+font-size: 0.86rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.form__checkbox input { /* Color de acento para checkbox */
+accent-color: var(--accent); /* Color */
+}
+
+/* Chips para prioridades */
+
+.chip { /* Chips para prioridades */
+display: inline-flex; /* Inline flexible */
+align-items: center; /* Centra */
+gap: 6px; /* Espacio */
+padding: 5px 10px; /* Espacio interior */
+border-radius: 999px; /* Redondo */
+border: 1px solid rgba(148, 163, 184, 0.6); /* Borde */
+font-size: 0.8rem; /* Tamaño */
+cursor: pointer; /* Cursor mano */
+background: rgba(15, 23, 42, 0.7); /* Fondo */
+transition: background-color 0.15s ease, border-color 0.15s ease,
+    transform 0.08s ease; /* Transiciones */
+}
+
+.chip input { /* Input en chip */
+accent-color: var(--accent); /* Color */
+}
+
+.chip:hover { /* Hover en chip */
+border-color: var(--accent); /* Borde acento */
+background: rgba(253, 164, 175, 0.12); /* Fondo acento */
+transform: translateY(-1px); /* Eleva */
+}
+
+/* BOTONES */
+
+.btn { /* Botones generales */
+border: none; /* Sin borde */
+border-radius: 999px; /* Redondo */
+padding: 7px 14px; /* Espacio */
+font-size: 0.86rem; /* Tamaño */
+font-weight: 500; /* Grosor */
+cursor: pointer; /* Mano */
+display: inline-flex; /* Inline flexible */
+align-items: center; /* Centra */
+gap: 6px; /* Espacio */
+background: var(--accent); /* Fondo acento */
+color: #0f172a; /* Color texto */
+box-shadow: 0 8px 20px rgba(253, 164, 175, 0.35); /* Sombra */
+transition: transform 0.08s ease, box-shadow 0.12s ease,
+    background-color 0.12s ease; /* Transiciones */
+white-space: nowrap; /* Sin wrap */
+}
+
+.btn:hover { /* Hover en botón */
+transform: translateY(-1px); /* Eleva */
+box-shadow: 0 12px 28px rgba(253, 164, 175, 0.4); /* Sombra más fuerte */
+}
+
+.btn:active { /* Activo en botón */
+transform: translateY(1px); /* Baja */
+box-shadow: 0 4px 12px rgba(253, 164, 175, 0.3); /* Sombra menor */
+}
+
+.btn--primary { /* Botón primary */
+background: var(--accent); /* Fondo */
+color: #0f172a; /* Texto */
+}
+
+.btn--ghost { /* Botón ghost */
+background: rgba(15, 23, 42, 0.4); /* Fondo transparente */
+color: var(--fg); /* Texto */
+box-shadow: none; /* Sin sombra */
+border: 1px solid rgba(148, 163, 184, 0.6); /* Borde */
+}
+
+.btn--ghost:hover { /* Hover en ghost */
+background: rgba(15, 23, 42, 0.9); /* Fondo más opaco */
+}
+
+/* Enlaces tipo botón para acciones en tabla */
+
+.btn-link { /* Botones link para acciones */
+border: none; /* Sin borde */
+background: none; /* Sin fondo */
+color: var(--accent); /* Color acento */
+font-size: 0.8rem; /* Tamaño */
+padding: 0; /* Sin espacio */
+cursor: pointer; /* Mano */
+text-decoration: none; /* Sin underline */
+}
+
+.btn-link:hover { /* Hover en link */
+text-decoration: underline; /* Subrayado */
+}
+
+/* Toolbar */
+
+.toolbar { /* Toolbar */
+margin-top: 10px; /* Margen superior */
+margin-bottom: 10px; /* Margen inferior */
+padding: 10px 12px; /* Espacio */
+border-radius: 20px; /* Esquinas */
+background: rgba(15, 23, 42, 0.9); /* Fondo */
+border: 1px solid rgba(148, 163, 184, 0.35); /* Borde */
+display: flex; /* Flexible */
+flex-wrap: wrap; /* Envuelve */
+gap: 10px; /* Espacio */
+align-items: center; /* Centra */
+}
+
+.toolbar__group { /* Grupo en toolbar */
+display: flex; /* Flexible */
+flex-direction: column; /* Columna */
+gap: 6px; /* Espacio */
+min-width: 180px; /* Ancho mínimo */
+flex: 1; /* Flexible */
+}
+
+.toolbar__label { /* Etiqueta en toolbar */
+font-size: 0.78rem; /* Tamaño */
+text-transform: uppercase; /* Mayúsculas */
+letter-spacing: 0.09em; /* Espacio letras */
+color: var(--fg-muted); /* Color */
+}
+
+.toolbar__buttons { /* Botones en toolbar */
+display: flex; /* Flexible */
+flex-wrap: wrap; /* Envuelve */
+gap: 6px; /* Espacio */
+}
+
+.btn-filter { /* Botón filtro */
+font-size: 0.78rem; /* Tamaño */
+padding-inline: 10px; /* Espacio horizontal */
+}
+
+.btn-filter.is-active { /* Filtro activo */
+background: var(--accent-soft); /* Fondo acento */
+border-color: var(--accent); /* Borde */
+}
+
+/* Estadísticas */
+
+.stats { /* Estadísticas */
+display: grid; /* Grilla */
+grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 columnas */
+gap: 10px; /* Espacio */
+margin-top: 6px; /* Margen superior */
+}
+
+.stat-card { /* Tarjeta de estadística */
+background: rgba(15, 23, 42, 0.9); /* Fondo */
+border-radius: 20px; /* Esquinas */
+border: 1px solid rgba(148, 163, 184, 0.4); /* Borde */
+padding: 9px 10px; /* Espacio */
+}
+
+.stat-card__label { /* Etiqueta en tarjeta */
+display: block; /* Bloque */
+font-size: 0.78rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.stat-card__value { /* Valor en tarjeta */
+display: block; /* Bloque */
+font-size: 1.1rem; /* Tamaño */
+font-weight: 600; /* Grosor */
+margin-top: 3px; /* Margen */
+}
+
+/* Tabla */
+
+.table-panel { /* Panel de tabla */
+margin-top: 14px; /* Margen */
+}
+
+.table-panel__header { /* Cabecera de panel tabla */
+display: flex; /* Flexible */
+flex-direction: column; /* Columna */
+gap: 2px; /* Espacio */
+}
+
+.table-panel__header h3 { /* Título en cabecera tabla */
+margin: 0; /* Sin margen */
+font-size: 0.95rem; /* Tamaño */
+}
+
+.table-panel__header small { /* Small en cabecera */
+font-size: 0.78rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.empty-state { /* Estado vacío */
+margin: 10px 0 0; /* Margen */
+font-size: 0.86rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+}
+
+.table-wrapper { /* Contenedor de tabla */
+margin-top: 10px; /* Margen */
+border-radius: 18px; /* Esquinas */
+border: 1px solid rgba(148, 163, 184, 0.45); /* Borde */
+overflow: hidden; /* Oculta desbordes */
+background: rgba(15, 23, 42, 0.94); /* Fondo */
+}
+
+table { /* Tabla general */
+width: 100%; /* Ancho completo */
+border-collapse: collapse; /* Colapsa bordes */
+font-size: 0.82rem; /* Tamaño */
+}
+
+thead { /* Cabecera de tabla */
+background: rgba(15, 23, 42, 0.98); /* Fondo */
+}
+
+th,
+td { /* Celdas de cabecera y datos */
+padding: 7px 10px; /* Espacio */
+text-align: left; /* Alinea izquierda */
+border-bottom: 1px solid rgba(31, 41, 55, 0.8); /* Borde inferior */
+}
+
+th { /* Encabezados th */
+font-weight: 500; /* Grosor */
+font-size: 0.78rem; /* Tamaño */
+color: var(--fg-muted); /* Color */
+text-transform: uppercase; /* Mayúsculas */
+letter-spacing: 0.08em; /* Espacio */
+}
+
+tbody tr:nth-child(even) { /* Filas pares en cuerpo */
+background: rgba(15, 23, 42, 0.85); /* Fondo alterno */
+}
+
+tbody tr:hover { /* Hover en filas */
+background: rgba(15, 23, 42, 0.98); /* Fondo hover */
+}
+
+/* Badge prioridad */
+
+.badge { /* Badge general */
+display: inline-flex; /* Inline flexible */
+align-items: center; /* Centra */
+border-radius: 999px; /* Redondo */
+padding: 2px 7px; /* Espacio */
+font-size: 0.72rem; /* Tamaño */
+border: 1px solid transparent; /* Borde transparente */
+}
+
+.badge--priority { /* Badge para prioridad */
+background: var(--accent-soft); /* Fondo */
+border-color: rgba(253, 164, 175, 0.5); /* Borde */
+}
+
+.priority-alta { /* Prioridad alta */
+  background: rgba(239, 68, 68, 0.12); /* Fondo rojo suave */
+  border-color: rgba(239, 68, 68, 0.5); /* Borde rojo */
+  color: #ef4444; /* Color texto rojo */
+}
+
+.priority-media { /* Prioridad media */
+  background: rgba(245, 158, 11, 0.12); /* Fondo ámbar */
+  border-color: rgba(245, 158, 11, 0.5); /* Borde */
+  color: #f59e0b; /* Color ámbar */
+}
+
+.priority-baja { /* Prioridad baja */
+  background: rgba(34, 197, 94, 0.12); /* Fondo verde */
+  border-color: rgba(34, 197, 94, 0.5); /* Borde */
+  color: #22c55e; /* Color verde */
+}
+
+/* Modal */
+
+.modal { /* Modal general */
+position: fixed; /* Fijo */
+inset: 0; /* Cubre todo */
+display: none; /* Oculto */
+align-items: center; /* Centra vertical */
+justify-content: center; /* Centra horizontal */
+pointer-events: none; /* No interactuable */
+z-index: 50; /* Capa alta */
+}
+
+.modal.is-open { /* Modal abierto */
+display: flex; /* Muestra flexible */
+pointer-events: all; /* Interactuable */
+}
+
+.modal__backdrop { /* Fondo de modal */
+position: absolute; /* Absoluto */
+inset: 0; /* Cubre */
+background: rgba(15, 23, 42, 0.7); /* Fondo oscuro */
+backdrop-filter: blur(4px); /* Desenfoque */
+}
+
+.modal__content { /* Contenido de modal */
+position: relative; /* Relativa */
+max-width: 460px; /* Ancho máximo */
+width: 100%; /* Ancho completo */
+background: rgba(15, 23, 42, 0.98); /* Fondo */
+border-radius: 24px; /* Esquinas */
+border: 1px solid rgba(148, 163, 184, 0.55); /* Borde */
+padding: 16px 18px 16px; /* Espacio */
+margin: 12px; /* Margen */
+box-shadow: var(--shadow-soft); /* Sombra */
+z-index: 1; /* Capa superior */
+}
+
+.modal__header { /* Cabecera de modal */
+display: flex; /* Flexible */
+align-items: center; /* Centra */
+justify-content: space-between; /* Espacio */
+gap: 10px; /* Espacio */
+margin-bottom: 8px; /* Margen inferior */
+}
+
+.modal__header h2 { /* Título en modal */
+margin: 0; /* Sin margen */
+font-size: 1rem; /* Tamaño */
+}
+
+.modal__close { /* Botón cerrar modal */
+border: none; /* Sin borde */
+background: transparent; /* Transparente */
+color: var(--fg-muted); /* Color */
+font-size: 1.4rem; /* Tamaño */
+cursor: pointer; /* Mano */
+padding: 0 4px; /* Espacio */
+}
+
+.modal__footer { /* Pie de modal */
+margin-top: 10px; /* Margen superior */
+display: flex; /* Flexible */
+justify-content: flex-end; /* Alinea derecha */
+gap: 8px; /* Espacio */
+}
+
+/* Utilidades */
+
+.hidden { /* Clase para ocultar elementos */
+display: none !important; /* Oculta forzado */
+}
+
+/* Responsivo */
+
+@media (max-width: 900px) { /* Media query para pantallas menores a 900px */
+.header {
+    flex-direction: column; /* Columna */
+    align-items: flex-start; /* Alinea izquierda */
+    border-radius: 24px; /* Esquinas */
+}
+
+.layout {
+    grid-template-columns: minmax(0, 1fr); /* Una columna */
+}
+
+.stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Dos columnas */
+}
+}
+
+@media (max-width: 600px) { /* Media query para pantallas menores a 600px */
+.toolbar {
+    padding: 10px 10px; /* Espacio */
+}
+
+.stats {
+    grid-template-columns: 1fr 1fr; /* Dos columnas */
+}
+
+th:nth-child(3),
+th:nth-child(4),
+th:nth-child(7),
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(7) {
+    display: none; /* Oculta columnas específicas */
+}
+}
+
+/* Mejoras justificadas: estilos para mensajes de error/success y extras creativos */
+
+.form-message { /* Estilos para mensajes de formulario */
+  font-size: 0.85rem; /* Tamaño */
+  padding: 8px 12px; /* Espacio */
+  border-radius: 8px; /* Esquinas */
+  margin-top: 8px; /* Margen */
+}
+
+.form-message.error { /* Mensaje de error */
+  background: rgba(244, 63, 94, 0.12); /* Fondo rojo suave */
+  color: #f43f5e; /* Color rojo */
+  border: 1px solid rgba(244, 63, 94, 0.4); /* Borde */
+}
+
+.form-message.success { /* Mensaje de éxito */
+  background: rgba(34, 197, 94, 0.12); /* Fondo verde */
+  color: #22c55e; /* Color verde */
+  border: 1px solid rgba(34, 197, 94, 0.4); /* Borde */
+}
+
+.row-important { /* Fila importante */
+  background: rgba(253, 164, 175, 0.08) !important; /* Fondo rosado */
+}
+
+.row-done { /* Fila completada */
+  text-decoration: line-through; /* Tachado */
+  opacity: 0.7; /* Opacidad baja */
+}
