@@ -1,251 +1,282 @@
+// ===============================
 // VARIABLES GLOBALES
-let activities = JSON.parse(localStorage.getItem("activities")) || []; // Carga actividades guardadas o inicia lista vacía
-let editingId = null; // Variable para ID de actividad en edición
+// ===============================
+let activities = JSON.parse(localStorage.getItem("activities")) || []; // Lista de tareas (array)
+let editingId = null; // ID para editar
 
-// ELEMENTOS
-const form = document.getElementById("activityForm"); // Obtiene el formulario de nueva actividad
-const tableBody = document.getElementById("activityTableBody"); // Obtiene el cuerpo de la tabla
-const emptyState = document.getElementById("emptyState"); // Obtiene el mensaje de estado vacío
-const searchInput = document.getElementById("search"); // Obtiene el campo de búsqueda
-const sortSelect = document.getElementById("sort"); // Obtiene el selector de orden
-const filterButtons = document.querySelectorAll(".btn-filter"); // Obtiene todos los botones de filtro
-const formMessage = document.createElement("p"); // Crea un párrafo para mensajes
-formMessage.id = "formMessage"; // Asigna ID al mensaje
-formMessage.classList.add("form-message", "hidden"); // Agrega clases al mensaje
-form.insertAdjacentElement("afterend", formMessage); // Inserta el mensaje después del formulario
+// ELEMENTOS DEL HTML
+const form = document.getElementById("activityForm"); // Formulario de agregar
+const tableBody = document.getElementById("activityTableBody"); // Cuerpo de la tabla
+const emptyState = document.getElementById("emptyState"); // Mensaje "No hay actividades"
+const searchInput = document.getElementById("search"); // Campo de búsqueda
+const sortSelect = document.getElementById("sort"); // Selector de orden
+const filterButtons = document.querySelectorAll(".btn-filter"); // Botones de filtro
+const formMessage = document.createElement("p"); // Mensaje de error/éxito
+formMessage.id = "formMessage";
+formMessage.classList.add("form-message", "hidden");
+form.insertAdjacentElement("afterend", formMessage); // Lo pone después del form
 
-// Modal
-const modal = document.getElementById("editModal"); // Obtiene el modal de edición
-const modalClose = document.getElementById("btnCloseModal"); // Obtiene botón cerrar modal
-const modalCancel = document.getElementById("btnCancelEdit"); // Obtiene botón cancelar edición
+// Modal de edición
+const modal = document.getElementById("editModal");
+const modalClose = document.getElementById("btnCloseModal");
+const modalCancel = document.getElementById("btnCancelEdit");
+const editForm = document.getElementById("editForm");
+const editTitle = document.getElementById("editTitle");
+const editSubject = document.getElementById("editSubject");
+const editType = document.getElementById("editType");
+const editDeadline = document.getElementById("editDeadline");
 
-// Campos del modal
-const editForm = document.getElementById("editForm"); // Obtiene el formulario de edición
-const editTitle = document.getElementById("editTitle"); // Obtiene campo título edición
-const editSubject = document.getElementById("editSubject"); // Obtiene campo materia edición
-const editType = document.getElementById("editType"); // Obtiene selector tipo edición
-const editDeadline = document.getElementById("editDeadline"); // Obtiene campo fecha edición
+// Botón tema
+const btnToggleTheme = document.getElementById("btnToggleTheme");
 
-// Tema
-const btnToggleTheme = document.getElementById("btnToggleTheme"); // Obtiene botón de tema
-
-// MOSTRAR MENSAJES
-function showMessage(text, type = "error") { // Define función con texto y tipo
-formMessage.textContent = text; // Asigna texto al mensaje
-formMessage.className = "form-message " + type; // Asigna clase según tipo
-formMessage.classList.remove("hidden"); // Muestra el mensaje
-setTimeout(() => formMessage.classList.add("hidden"), 2500); // Oculta después de 2.5 segundos
-}
-
-// GUARDAR EN LOCALSTORAGE
-function saveToStorage() { // Define función
-localStorage.setItem("activities", JSON.stringify(activities)); // Guarda actividades como string
-}
-
-// AGREGAR ACTIVIDAD
-form.addEventListener("submit", (e) => { // Escucha envío del formulario
-e.preventDefault(); // Evita comportamiento por defecto
-
-const title = document.getElementById("title").value.trim(); // Obtiene título limpio
-if (!title) return showMessage("El título es obligatorio"); // Valida título vacío
-
-const estimatedTimeInput = document.getElementById("estimatedTime").value; // Obtiene tiempo input
-const estimatedTime = estimatedTimeInput ? Number(estimatedTimeInput) : 0; // Convierte a número o 0
-if (estimatedTime < 0) return showMessage("El tiempo estimado debe ser mayor o igual a 0"); // Valida tiempo no negativo
-
-const activity = { // Crea objeto de actividad
-    id: crypto.randomUUID(), // Genera ID único
-    title, // Asigna título
-    subject: document.getElementById("subject").value, // Asigna materia
-    type: document.getElementById("type").value, // Asigna tipo
-    difficulty: document.getElementById("difficulty").value, // Asigna dificultad
-    estimatedTime, // Asigna tiempo
-    priority: document.querySelector("input[name='priority']:checked").value, // Asigna prioridad seleccionada
-    deadline: document.getElementById("deadline").value, // Asigna fecha
-    notes: document.getElementById("notes").value, // Asigna notas
-    important: document.getElementById("isImportant").checked, // Asigna si es importante
-    completed: false // Inicia como no completada
+// Mapa para mostrar tipos bonitos
+const typeMap = {
+  lectura: "Lectura teórica",
+  practica: "Práctica / ejercicios",
+  proyecto: "Proyecto / integrador",
+  evaluacion: "Evaluación / parcial"
 };
 
-activities.push(activity); // Agrega a la lista
-saveToStorage(); // Guarda
-renderTable(); // Actualiza tabla
-updateStats(); // Actualiza estadísticas
-form.reset(); // Limpia formulario
+// ===============================
+// MOSTRAR MENSAJES (punto 11: extras creativos)
+// ===============================
+function showMessage(text, type = "error") {
+  formMessage.textContent = text; // Pone el texto
+  formMessage.className = "form-message " + type; // Clase error o success
+  formMessage.classList.remove("hidden"); // Lo muestra
+  setTimeout(() => formMessage.classList.add("hidden"), 2500); // Lo esconde en 2.5 seg
+}
 
-showMessage("Actividad agregada correctamente", "success"); // Muestra mensaje éxito
+// ===============================
+// GUARDAR EN LOCALSTORAGE (para que no se borre al cerrar)
+// ===============================
+function saveToStorage() {
+  localStorage.setItem("activities", JSON.stringify(activities)); // Guarda el array como texto
+}
+
+// ===============================
+// AGREGAR ACTIVIDAD (punto 1: alta + validación)
+// ===============================
+form.addEventListener("submit", (e) => { // Escucha cuando enviás el form
+  e.preventDefault(); // Evita que la página se recargue
+
+  const title = document.getElementById("title").value.trim(); // Toma el título
+  if (!title) return showMessage("El título es obligatorio"); // Si vacío, error
+
+  const estimatedTimeInput = document.getElementById("estimatedTime").value; // Toma tiempo
+  const estimatedTime = estimatedTimeInput ? Number(estimatedTimeInput) : 0; // Lo convierte a número
+  if (estimatedTime < 0) return showMessage("El tiempo debe ser mayor o igual a 0"); // Valida
+
+  // Crea el objeto de la tarea
+  const activity = {
+    id: crypto.randomUUID(), // ID único
+    title, // Título
+    subject: document.getElementById("subject").value, // Materia
+    type: document.getElementById("type").value, // Tipo
+    difficulty: document.getElementById("difficulty").value, // Dificultad
+    estimatedTime, // Tiempo
+    priority: document.querySelector("input[name='priority']:checked").value, // Prioridad
+    deadline: document.getElementById("deadline").value, // Fecha
+    notes: document.getElementById("notes").value, // Notas
+    important: document.getElementById("isImportant").checked, // Importante?
+    completed: false // No completada al inicio
+  };
+
+  activities.push(activity); // Agrega a la lista
+  saveToStorage(); // Guarda
+  renderTable(); // Dibuja la tabla (punto 2)
+  updateStats(); // Actualiza contadores (punto 5)
+  form.reset(); // Limpia el form
+
+  showMessage("¡Actividad agregada!", "success"); // Mensaje éxito
 });
 
-// RENDER TABLA
-function renderTable() { // Define función
-tableBody.innerHTML = ""; // Limpia cuerpo de tabla
+// ===============================
+// DIBUJAR TABLA (puntos 2, 6, 7, 8: listado + filtro + búsqueda + orden)
+// ===============================
+function renderTable() {
+  tableBody.innerHTML = ""; // Borra la tabla vieja
 
-const filtered = getFilteredActivities(); // Obtiene actividades filtradas
+  const filtered = getFilteredActivities(); // Aplica filtros y orden (ver abajo)
 
-if (filtered.length === 0) { // Si no hay actividades
-    emptyState.classList.remove("hidden"); // Muestra estado vacío
-    return; // Sale
+  if (filtered.length === 0) { // Si no hay nada
+    emptyState.classList.remove("hidden"); // Muestra "No hay actividades"
+    return;
+  }
+
+  emptyState.classList.add("hidden"); // Esconde el mensaje
+
+  filtered.forEach((act) => { // Para cada tarea
+    const template = document.getElementById("rowTemplate"); // Toma el molde
+    const clone = template.content.cloneNode(true); // Lo copia
+    const row = clone.querySelector("tr"); // La fila copiada
+
+    row.dataset.id = act.id; // ID
+    row.dataset.status = act.completed ? "completada" : "pendiente"; // Estado
+
+    if (act.important) row.classList.add("row-important"); // Fondo rosa si importante (punto 11)
+    if (act.completed) row.classList.add("row-done"); // Tachado si completada (punto 3)
+
+    // Llena la fila
+    clone.querySelector(".row-title").textContent = act.title; // Título
+    clone.querySelector(".row-subject").textContent = act.subject; // Materia
+    clone.querySelector(".row-type").textContent = typeMap[act.type] || act.type; // Tipo bonito
+
+    const badge = clone.querySelector(".badge--priority"); // Badge prioridad
+    badge.textContent = act.priority.charAt(0).toUpperCase() + act.priority.slice(1); // "Alta"
+    badge.classList.add(`priority-${act.priority}`); // Color según prioridad (punto 11)
+
+    clone.querySelector(".row-deadline").textContent = act.deadline || "-"; // Fecha
+    clone.querySelector(".row-time").textContent = act.estimatedTime || "-"; // Tiempo
+
+    // Checkbox completar (punto 3)
+    const checkbox = clone.querySelector(".row-complete");
+    checkbox.checked = act.completed;
+    checkbox.addEventListener("change", () => toggleCompleted(act.id));
+
+    // Botones editar y eliminar (puntos 4 y 9)
+    clone.querySelector(".btn-edit").addEventListener("click", () => openModal(act.id));
+    clone.querySelector(".btn-delete").addEventListener("click", () => deleteActivity(act.id));
+
+    tableBody.appendChild(clone); // Agrega la fila a la tabla
+  });
 }
 
-emptyState.classList.add("hidden"); // Oculta estado vacío
-
-filtered.forEach((act) => { // Para cada actividad filtrada
-    const template = document.getElementById("rowTemplate"); // Obtiene plantilla
-    const clone = template.content.cloneNode(true); // Clona plantilla
-    const row = clone.querySelector("tr"); // Obtiene fila
-
-    row.dataset.id = act.id; // Asigna ID
-    row.dataset.status = act.completed ? "completada" : "pendiente"; // Asigna estado
-
-    if (act.important) row.classList.add("row-important"); // Agrega clase si importante
-    if (act.completed) row.classList.add("row-done"); // Agrega clase si completada
-
-    clone.querySelector(".row-title").textContent = act.title; // Asigna título
-    clone.querySelector(".row-subject").textContent = act.subject; // Asigna materia
-    clone.querySelector(".row-type").textContent = typeMap[act.type] || act.type; // Asigna tipo con mapa
-
-    const badge = clone.querySelector(".badge--priority"); // Obtiene badge
-    badge.textContent = act.priority.charAt(0).toUpperCase() + act.priority.slice(1); // Asigna prioridad capitalizada
-    badge.classList.add(`priority-${act.priority}`); // Agrega clase por prioridad
-
-    clone.querySelector(".row-deadline").textContent = act.deadline || "-"; // Asigna fecha o guion
-    clone.querySelector(".row-time").textContent = act.estimatedTime || "-"; // Asigna tiempo o guion
-
-    const checkbox = clone.querySelector(".row-complete"); // Obtiene checkbox
-    checkbox.checked = act.completed; // Marca si completada
-    checkbox.addEventListener("change", () => toggleCompleted(act.id)); // Escucha cambio
-
-    clone.querySelector(".btn-edit").addEventListener("click", () => openModal(act.id)); // Escucha editar
-    clone.querySelector(".btn-delete").addEventListener("click", () => deleteActivity(act.id)); // Escucha eliminar
-
-    tableBody.appendChild(clone); // Agrega fila a tabla
-});
+// ===============================
+// COMPLETAR TAREA (punto 3)
+// ===============================
+function toggleCompleted(id) {
+  activities = activities.map((a) => // Cambia solo esa tarea
+    a.id === id ? { ...a, completed: !a.completed } : a
+  );
+  saveToStorage();
+  renderTable(); // Vuelve a dibujar
+  updateStats();
 }
 
-// COMPLETAR ACTIVIDAD
-function toggleCompleted(id) { // Define función con ID
-activities = activities.map((a) => // Mapea actividades
-    a.id === id ? { ...a, completed: !a.completed } : a // Cambia completada
-);
-saveToStorage(); // Guarda
-renderTable(); // Actualiza tabla
-updateStats(); // Actualiza stats
+// ===============================
+// ELIMINAR TAREA (punto 4)
+// ===============================
+function deleteActivity(id) {
+  activities = activities.filter((a) => a.id !== id); // Quita la tarea
+  saveToStorage();
+  renderTable();
+  updateStats();
 }
 
-// ELIMINAR ACTIVIDAD
-function deleteActivity(id) { // Define con ID
-activities = activities.filter((a) => a.id !== id); // Filtra excluyendo ID
-saveToStorage(); // Guarda
-renderTable(); // Actualiza
-updateStats(); // Actualiza
-}
+// ===============================
+// EDITAR CON MODAL (punto 9)
+// ===============================
+function openModal(id) {
+  const act = activities.find((a) => a.id === id); // Encuentra la tarea
+  editingId = id;
 
-// EDITAR ACTIVIDAD - MODAL
-function openModal(id) { // Define con ID
-const act = activities.find((a) => a.id === id); // Encuentra actividad
-editingId = id; // Asigna ID edición
+  editTitle.value = act.title; // Llena el modal
+  editSubject.value = act.subject;
+  editType.value = act.type;
+  editDeadline.value = act.deadline;
 
-editTitle.value = act.title; // Carga título
-editSubject.value = act.subject; // Carga materia
-editType.value = act.type; // Carga tipo
-editDeadline.value = act.deadline; // Carga fecha
-
-modal.classList.add("is-open"); // Abre modal
+  modal.classList.add("is-open"); // Abre el modal
 }
 
 modalClose.onclick = () => modal.classList.remove("is-open"); // Cierra con X
-modalCancel.onclick = () => modal.classList.remove("is-open"); // Cierra con cancelar
+modalCancel.onclick = () => modal.classList.remove("is-open"); // Cierra con Cancelar
 
-editForm.addEventListener("submit", (e) => { // Escucha envío edición
-e.preventDefault(); // Evita default
+editForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-activities = activities.map((a) => // Mapea
-    a.id === editingId // Si es el ID
-    ? {
-        ...a, // Copia
-        title: editTitle.value.trim(), // Actualiza título
-        subject: editSubject.value, // Actualiza materia
-        type: editType.value, // Actualiza tipo
-        deadline: editDeadline.value // Actualiza fecha
+  activities = activities.map((a) => // Actualiza solo esa tarea
+    a.id === editingId
+      ? {
+          ...a,
+          title: editTitle.value.trim(),
+          subject: editSubject.value,
+          type: editType.value,
+          deadline: editDeadline.value
         }
-    : a // Mantiene
-);
+      : a
+  );
 
-saveToStorage(); // Guarda
-renderTable(); // Actualiza
-updateStats(); // Actualiza
-
-modal.classList.remove("is-open"); // Cierra modal
+  saveToStorage();
+  renderTable();
+  updateStats();
+  modal.classList.remove("is-open"); // Cierra
 });
 
-// FILTROS
-function getFilteredActivities() { // Define función
-let list = [...activities]; // Copia lista
+// ===============================
+// FILTROS + BÚSQUEDA + ORDEN (puntos 6, 7, 8)
+// ===============================
+function getFilteredActivities() {
+  let list = [...activities]; // Copia la lista
 
-  // filtro estado
-const activeFilter = document.querySelector(".btn-filter.is-active").dataset.filter; // Obtiene filtro activo
+  // Filtro por estado (punto 6)
+  const activeFilter = document.querySelector(".btn-filter.is-active").dataset.filter;
+  if (activeFilter === "pendientes") list = list.filter((a) => !a.completed);
+  if (activeFilter === "completadas") list = list.filter((a) => a.completed);
 
-if (activeFilter === "pendientes") list = list.filter((a) => !a.completed); // Solo pendientes
-if (activeFilter === "completadas") list = list.filter((a) => a.completed); // Solo completadas
-
-  // búsqueda
-const q = searchInput.value.toLowerCase().trim(); // Obtiene query baja
-if (q) { // Si hay query
-    list = list.filter( // Filtra
-    (a) =>
-        a.title.toLowerCase().includes(q) || // Incluye en título
-        a.subject.toLowerCase().includes(q) // O en materia
+  // Búsqueda (punto 7)
+  const q = searchInput.value.toLowerCase().trim();
+  if (q) {
+    list = list.filter(
+      (a) => a.title.toLowerCase().includes(q) || a.subject.toLowerCase().includes(q)
     );
+  }
+
+  // Orden (punto 8)
+  const sort = sortSelect.value;
+  if (sort === "titulo") list.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === "prioridad") {
+    const order = { alta: 1, media: 2, baja: 3 };
+    list.sort((a, b) => order[a.priority] - order[b.priority]);
+  }
+  if (sort === "fecha")
+    list.sort((a, b) => (a.deadline || "").localeCompare(b.deadline || ""));
+
+  return list; // Lista lista para dibujar
 }
 
-  // ordenamiento
-const sort = sortSelect.value; // Obtiene opción
-if (sort === "titulo") list.sort((a, b) => a.title.localeCompare(b.title)); // Ordena por título
-if (sort === "prioridad") { // Por prioridad
-    const order = { alta: 1, media: 2, baja: 3 }; // Orden numérico
-    list.sort((a, b) => order[a.priority] - order[b.priority]); // Ordena
-}
-if (sort === "fecha")
-    list.sort((a, b) => (a.deadline || "").localeCompare(b.deadline || "")); // Ordena por fecha
-
-return list; // Devuelve lista filtrada
-}
-
-// Eventos filtros
-filterButtons.forEach((btn) => // Para cada botón filtro
-btn.addEventListener("click", () => { // Escucha click
-    filterButtons.forEach((b) => b.classList.remove("is-active")); // Quita activo
-    btn.classList.add("is-active"); // Agrega activo
-    renderTable(); // Actualiza tabla
-})
+// Eventos para filtros, búsqueda y orden
+filterButtons.forEach((btn) =>
+  btn.addEventListener("click", () => {
+    filterButtons.forEach((b) => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    renderTable();
+  })
 );
 
-searchInput.addEventListener("input", () => renderTable()); // Escucha input búsqueda
-sortSelect.addEventListener("change", () => renderTable()); // Escucha cambio orden
+searchInput.addEventListener("input", () => renderTable()); // Búsqueda en vivo
+sortSelect.addEventListener("change", () => renderTable()); // Orden al cambiar
 
-// ESTADÍSTICAS
-function updateStats() { // Define función
-document.getElementById("statTotal").textContent = activities.length; // Total actividades
-document.getElementById("statCompleted").textContent = activities.filter((a) => a.completed).length; // Completadas
-document.getElementById("statPending").textContent = activities.filter((a) => !a.completed).length; // Pendientes
-document.getElementById("statHours").textContent = activities.reduce((acc, a) => acc + (a.estimatedTime || 0), 0); // Suma horas
+// ===============================
+// ESTADÍSTICAS (punto 5)
+// ===============================
+function updateStats() {
+  document.getElementById("statTotal").textContent = activities.length; // Total
+  document.getElementById("statCompleted").textContent = activities.filter((a) => a.completed).length; // Completadas
+  document.getElementById("statPending").textContent = activities.filter((a) => !a.completed).length; // Pendientes
+  document.getElementById("statHours").textContent = activities.reduce((acc, a) => acc + (a.estimatedTime || 0), 0); // Horas (solo las que tienen)
 }
 
-// CAMBIAR TEMA
-btnToggleTheme.addEventListener("click", () => { // Escucha click
-document.body.classList.toggle("theme-light"); // Alterna clase
-localStorage.setItem( // Guarda preferencia
+// ===============================
+// TEMA CLARO/OSCuro (punto 10)
+// ===============================
+btnToggleTheme.addEventListener("click", () => {
+  document.body.classList.toggle("theme-light"); // Cambia clase
+localStorage.setItem(
     "theme",
     document.body.classList.contains("theme-light") ? "light" : "dark"
-);
+  ); // Guarda
 });
 
-(function loadTheme() { // Función autoejecutable para cargar tema
-if (localStorage.getItem("theme") === "light") { // Si es light
-    document.body.classList.add("theme-light"); // Agrega clase
+// Carga el tema al abrir
+(function loadTheme() {
+if (localStorage.getItem("theme") === "light") {
+    document.body.classList.add("theme-light");
 }
 })();
 
-// Inicializar
-renderTable(); // Renderiza tabla inicial
-updateStats(); // Actualiza stats iniciales
+// ===============================
+// INICIALIZAR (se ejecuta al cargar la página)
+// ===============================
+renderTable(); // Dibuja tabla inicial
+updateStats(); // Contadores iniciales
