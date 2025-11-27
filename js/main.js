@@ -1,6 +1,4 @@
-// ===============================
 // VARIABLES GLOBALES
-// ===============================
 let activities = JSON.parse(localStorage.getItem("activities")) || []; // Lista de tareas (array)
 let editingId = null; // ID para editar
 
@@ -31,15 +29,13 @@ const btnToggleTheme = document.getElementById("btnToggleTheme");
 
 // Mapa para mostrar tipos bonitos
 const typeMap = {
-  lectura: "Lectura teórica",
-  practica: "Práctica / ejercicios",
-  proyecto: "Proyecto / integrador",
-  evaluacion: "Evaluación / parcial"
+lectura: "Lectura teórica",
+practica: "Práctica / ejercicios",
+proyecto: "Proyecto / integrador",
+evaluacion: "Evaluación / parcial"
 };
 
-// ===============================
-// MOSTRAR MENSAJES (punto 11: extras creativos)
-// ===============================
+// MOSTRAR MENSAJES 
 function showMessage(text, type = "error") {
   formMessage.textContent = text; // Pone el texto
   formMessage.className = "form-message " + type; // Clase error o success
@@ -47,16 +43,12 @@ function showMessage(text, type = "error") {
   setTimeout(() => formMessage.classList.add("hidden"), 2500); // Lo esconde en 2.5 seg
 }
 
-// ===============================
 // GUARDAR EN LOCALSTORAGE (para que no se borre al cerrar)
-// ===============================
 function saveToStorage() {
   localStorage.setItem("activities", JSON.stringify(activities)); // Guarda el array como texto
 }
 
-// ===============================
-// AGREGAR ACTIVIDAD (punto 1: alta + validación)
-// ===============================
+// AGREGAR ACTIVIDAD 
 form.addEventListener("submit", (e) => { // Escucha cuando enviás el form
   e.preventDefault(); // Evita que la página se recargue
 
@@ -68,7 +60,7 @@ form.addEventListener("submit", (e) => { // Escucha cuando enviás el form
   if (estimatedTime < 0) return showMessage("El tiempo debe ser mayor o igual a 0"); // Valida
 
   // Crea el objeto de la tarea
-  const activity = {
+const activity = {
     id: crypto.randomUUID(), // ID único
     title, // Título
     subject: document.getElementById("subject").value, // Materia
@@ -80,7 +72,7 @@ form.addEventListener("submit", (e) => { // Escucha cuando enviás el form
     notes: document.getElementById("notes").value, // Notas
     important: document.getElementById("isImportant").checked, // Importante?
     completed: false // No completada al inicio
-  };
+};
 
   activities.push(activity); // Agrega a la lista
   saveToStorage(); // Guarda
@@ -91,9 +83,7 @@ form.addEventListener("submit", (e) => { // Escucha cuando enviás el form
   showMessage("¡Actividad agregada!", "success"); // Mensaje éxito
 });
 
-// ===============================
-// DIBUJAR TABLA (puntos 2, 6, 7, 8: listado + filtro + búsqueda + orden)
-// ===============================
+// DIBUJAR TABLA 
 function renderTable() {
   tableBody.innerHTML = ""; // Borra la tabla vieja
 
@@ -102,7 +92,7 @@ function renderTable() {
   if (filtered.length === 0) { // Si no hay nada
     emptyState.classList.remove("hidden"); // Muestra "No hay actividades"
     return;
-  }
+}
 
   emptyState.classList.add("hidden"); // Esconde el mensaje
 
@@ -139,42 +129,36 @@ function renderTable() {
     clone.querySelector(".btn-delete").addEventListener("click", () => deleteActivity(act.id));
 
     tableBody.appendChild(clone); // Agrega la fila a la tabla
-  });
+});
 }
 
-// ===============================
-// COMPLETAR TAREA (punto 3)
-// ===============================
+// COMPLETAR TAREA 
 function toggleCompleted(id) {
   activities = activities.map((a) => // Cambia solo esa tarea
     a.id === id ? { ...a, completed: !a.completed } : a
-  );
-  saveToStorage();
+);
+saveToStorage();
   renderTable(); // Vuelve a dibujar
-  updateStats();
+updateStats();
 }
 
-// ===============================
-// ELIMINAR TAREA (punto 4)
-// ===============================
+// ELIMINAR TAREA 
 function deleteActivity(id) {
   activities = activities.filter((a) => a.id !== id); // Quita la tarea
-  saveToStorage();
-  renderTable();
-  updateStats();
+saveToStorage();
+renderTable();
+updateStats();
 }
 
-// ===============================
-// EDITAR CON MODAL (punto 9)
-// ===============================
+// EDITAR CON MODAL 
 function openModal(id) {
   const act = activities.find((a) => a.id === id); // Encuentra la tarea
-  editingId = id;
+editingId = id;
 
   editTitle.value = act.title; // Llena el modal
-  editSubject.value = act.subject;
-  editType.value = act.type;
-  editDeadline.value = act.deadline;
+editSubject.value = act.subject;
+editType.value = act.type;
+editDeadline.value = act.deadline;
 
   modal.classList.add("is-open"); // Abre el modal
 }
@@ -183,53 +167,51 @@ modalClose.onclick = () => modal.classList.remove("is-open"); // Cierra con X
 modalCancel.onclick = () => modal.classList.remove("is-open"); // Cierra con Cancelar
 
 editForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+e.preventDefault();
 
   activities = activities.map((a) => // Actualiza solo esa tarea
     a.id === editingId
-      ? {
-          ...a,
-          title: editTitle.value.trim(),
-          subject: editSubject.value,
-          type: editType.value,
-          deadline: editDeadline.value
+    ? {
+        ...a,
+        title: editTitle.value.trim(),
+        subject: editSubject.value,
+        type: editType.value,
+        deadline: editDeadline.value
         }
-      : a
-  );
+    : a
+);
 
-  saveToStorage();
-  renderTable();
-  updateStats();
+saveToStorage();
+renderTable();
+updateStats();
   modal.classList.remove("is-open"); // Cierra
 });
 
-// ===============================
-// FILTROS + BÚSQUEDA + ORDEN (puntos 6, 7, 8)
-// ===============================
+// FILTROS 
 function getFilteredActivities() {
   let list = [...activities]; // Copia la lista
 
   // Filtro por estado (punto 6)
-  const activeFilter = document.querySelector(".btn-filter.is-active").dataset.filter;
-  if (activeFilter === "pendientes") list = list.filter((a) => !a.completed);
-  if (activeFilter === "completadas") list = list.filter((a) => a.completed);
+const activeFilter = document.querySelector(".btn-filter.is-active").dataset.filter;
+if (activeFilter === "pendientes") list = list.filter((a) => !a.completed);
+if (activeFilter === "completadas") list = list.filter((a) => a.completed);
 
-  // Búsqueda (punto 7)
-  const q = searchInput.value.toLowerCase().trim();
-  if (q) {
+  // Búsqueda 
+const q = searchInput.value.toLowerCase().trim();
+if (q) {
     list = list.filter(
-      (a) => a.title.toLowerCase().includes(q) || a.subject.toLowerCase().includes(q)
+    (a) => a.title.toLowerCase().includes(q) || a.subject.toLowerCase().includes(q)
     );
-  }
+}
 
-  // Orden (punto 8)
-  const sort = sortSelect.value;
-  if (sort === "titulo") list.sort((a, b) => a.title.localeCompare(b.title));
-  if (sort === "prioridad") {
+  // Orden 
+const sort = sortSelect.value;
+if (sort === "titulo") list.sort((a, b) => a.title.localeCompare(b.title));
+if (sort === "prioridad") {
     const order = { alta: 1, media: 2, baja: 3 };
     list.sort((a, b) => order[a.priority] - order[b.priority]);
-  }
-  if (sort === "fecha")
+}
+if (sort === "fecha")
     list.sort((a, b) => (a.deadline || "").localeCompare(b.deadline || ""));
 
   return list; // Lista lista para dibujar
@@ -237,19 +219,17 @@ function getFilteredActivities() {
 
 // Eventos para filtros, búsqueda y orden
 filterButtons.forEach((btn) =>
-  btn.addEventListener("click", () => {
+btn.addEventListener("click", () => {
     filterButtons.forEach((b) => b.classList.remove("is-active"));
     btn.classList.add("is-active");
     renderTable();
-  })
+})
 );
 
 searchInput.addEventListener("input", () => renderTable()); // Búsqueda en vivo
 sortSelect.addEventListener("change", () => renderTable()); // Orden al cambiar
 
-// ===============================
-// ESTADÍSTICAS (punto 5)
-// ===============================
+// ESTADÍSTICAS 
 function updateStats() {
   document.getElementById("statTotal").textContent = activities.length; // Total
   document.getElementById("statCompleted").textContent = activities.filter((a) => a.completed).length; // Completadas
@@ -257,9 +237,7 @@ function updateStats() {
   document.getElementById("statHours").textContent = activities.reduce((acc, a) => acc + (a.estimatedTime || 0), 0); // Horas (solo las que tienen)
 }
 
-// ===============================
-// TEMA CLARO/OSCuro (punto 10)
-// ===============================
+// TEMA CLARO/OSCuro 
 btnToggleTheme.addEventListener("click", () => {
   document.body.classList.toggle("theme-light"); // Cambia clase
 localStorage.setItem(
@@ -275,8 +253,6 @@ if (localStorage.getItem("theme") === "light") {
 }
 })();
 
-// ===============================
-// INICIALIZAR (se ejecuta al cargar la página)
-// ===============================
+// INICIALIZAR 
 renderTable(); // Dibuja tabla inicial
 updateStats(); // Contadores iniciales
